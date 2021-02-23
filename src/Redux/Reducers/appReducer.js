@@ -17,7 +17,7 @@ const initialState = {
     currentPage: 1,
     pageSize: 50,
     pQuant: 3,
-    Q: 0,
+    curQuant: 0,
   },
 };
 
@@ -32,7 +32,7 @@ export const app = (state = initialState, action) => {
         ...state,
         dashboardParams: {
           ...state.dashboardParams,
-          Q: action.Q,
+          curQuant: action.quant,
         },
       };
     case SET_PAGE:
@@ -53,24 +53,49 @@ export const app = (state = initialState, action) => {
 // ACTIONs
 
 // const isInitialize = () => ({ type: INITIALIZE });
-export const setQuant = (Q) => ({ type: SET_QUANT, Q });
-export const setPage = (page) => ({ type: SET_PAGE, page });
+const setQuant = (quant) => ({ type: SET_QUANT, quant });
+const setPage = (page) => ({ type: SET_PAGE, page });
 const dataToShow = (data) => ({ type: SET_DATATOSHOW, data });
 const isDashboardInit = () => ({ type: DASHBOARD_INIT });
 
 //THUNKs
 
-const pageFilter = (data, pSize, page) => {
-  return data.filter((_, i) => i >= pSize * (page - 1) && i < page * pSize);
-};
+const pageFilter = (data, pSize, page) =>
+  data.filter((_, i) => i >= pSize * (page - 1) && i < page * pSize);
 
 export const dashboardInit = (data, pSize) => (dispatch) => {
   dispatch(dataToShow(pageFilter(data, pSize, 1)));
   dispatch(isDashboardInit());
 };
 
-export const showPage = (data, newQ, page, pSize) => (dispatch) => {
-  dispatch(setQuant(newQ));
+export const showPage = (data, newQuant, page, pSize) => (dispatch) => {
+  dispatch(setQuant(newQuant));
   dispatch(setPage(page));
   dispatch(dataToShow(pageFilter(data, pSize, page)));
+};
+
+const pageSorter = (data, sortBy, option) => {
+  const dataToSort = [...data.data];
+  console.log(dataToSort, sortBy, option);
+
+  const byCarrierIncr = dataToSort.sort(
+    (el1, el2) => el1.carrier.caption - el2.carrier.caption
+  );
+  const byCarrierDecr = dataToSort.sort(
+    (el1, el2) => el2.carrier.caption - el1.carrier.caption
+  );
+  const byPriceIncr = dataToSort.sort(
+    (el1, el2) => el1.price.amount - el2.price.amount
+  );
+  const byPriceDecr = dataToSort.sort(
+    (el1, el2) => el2.price.amount - el1.price.amount
+  );
+
+  // sortBy === 'carrier' &&
+  // sortBy === 'price' &&
+};
+
+export const showSortedPage = (sortBy, option) => (dispatch, getState) => {
+  //   dispatch(dataToShow(pageSorter(getState().app, sortBy, option)));
+  pageSorter(getState().app, sortBy, option);
 };
