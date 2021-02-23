@@ -17,7 +17,7 @@ const MenuItem = ({ item }) => {
 };
 
 const Aside = ({ menu }) => {
-  console.log(menu);
+  // console.log(menu);
   return (
     <aside className={styles.aside}>
       <div className={styles.menu}>

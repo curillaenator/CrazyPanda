@@ -1,7 +1,44 @@
-@import '../../../palette.scss';
+@import "../../../palette.scss";
 
 .button {
+  border: none;
+  outline: none;
+  background-color: $primary;
+  font-size: 12px;
+  color: $textWhite;
+  text-transform: uppercase;
+  transition: 0.08s linear;
+  cursor: pointer;
+  &:hover {
+    background-color: $primaryHover;
+  }
+  &:active {
+    color: $textWhiteClick;
     background-color: $primary;
+    & > svg {
+      fill: $textWhiteClick;
+    }
+  }
+}
+.activated {
+  background-color: $primaryActive;
+  &:hover {
+    background-color: $primaryActive;
+  }
+  &:active {
     color: $textWhite;
-    text-transform: uppercase;
+    background-color: $primaryActive;
+  }
+}
+.disabled {
+  border: 1px solid $divider;
+  color: $divider;
+  background-color: $textWhite;
+  cursor: default;
+  &:hover {
+    background-color: $textWhite;
+  }
+  &:active {
+    background-color: $textWhite;
+  }
 }

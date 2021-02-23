@@ -1,0 +1,69 @@
+@import "../../../palette.scss";
+
+.dashboard {
+  width: 100%;
+  padding: 16px 0 0 16px;
+  .head {
+    display: flex;
+    width: 100%;
+    height: 40px;
+    border-top: 1px solid $divider;
+    border-bottom: 1px solid $divider;
+    .item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+  .list {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-height: calc(100vh - 160px - 24px);
+    overflow-y: auto;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    .flight {
+      display: flex;
+      width: 100%;
+      height: 40px;
+      margin-top: 8px;
+      border-top: 1px solid $divider;
+      border-bottom: 1px solid $divider;
+      .carrier {
+        display: flex;
+        align-items: center;
+        padding-left: 32px;
+        width: calc(100% - 220px);
+        & > img {
+          width: 100px;
+          margin-right: 16px;
+        }
+      }
+      .price {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 220px;
+      }
+    }
+  }
+  .controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 40px;
+    padding: 0 16px;
+    margin-bottom: 8px;
+    background-color: $secondary;
+    .filter {
+    }
+    .pagination {
+      display: flex;
+      & > button {
+        margin-left: 8px;
+      }
+    }
+  }
+}

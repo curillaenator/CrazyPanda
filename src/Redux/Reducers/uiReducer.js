@@ -52,6 +52,10 @@ const initialState = {
     authorName: "Артуров Кирилл",
     authorInfo: "талантливый фронтенд разработчик",
   },
+  dashboard: [
+    { name: "carrier", title: "Перевозчик", width: "calc(100% - 220px)" },
+    { name: "price", title: "Цена", width: "220px" },
+  ],
 };
 
 export const ui = (state = initialState) => state;
