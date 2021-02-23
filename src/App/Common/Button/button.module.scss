@@ -1,0 +1,7 @@
+@import '../../../palette.scss';
+
+.button {
+    background-color: $primary;
+    color: $textWhite;
+    text-transform: uppercase;
+}

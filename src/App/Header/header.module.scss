@@ -1,0 +1,38 @@
+@import "../../palette.scss";
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 80px;
+  padding: 0 16px;
+  background-color: $primary;
+  & > img {
+    height: 80%;
+  }
+  .author {
+    display: flex;
+    align-items: center;
+    .info {
+      text-align: right;
+      margin-right: 8px;
+      & > h2 {
+        color: $textWhite;
+        font-size: 16px;
+        text-transform: uppercase;
+      }
+      & > p {
+        font-size: 10px;
+        color: $textWhite;
+      }
+    }
+    & > img {
+      width: 60px;
+      height: 60px;
+      border: 3px solid $textWhite;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+  }
+}

@@ -1,0 +1,10 @@
+@import "../palette.scss";
+
+.container {
+  max-width: 1024px;
+  margin: 0 auto;
+  .body {
+    width: 100%;
+    display: flex;
+  }
+}
