@@ -1,10 +1,12 @@
 import data from "../../flights.json";
-const INITIALIZE = "appReducer/INITIALIZE";
+
 const SET_QUANT = "appReducer/SET_QUANT";
 const SET_PAGE = "appReducer/SET_PAGE";
 const SET_DATATOSHOW = "appReducer/SET_DATATOSHOW";
 const SET_DATASORTED = "appReducer/SET_DATASORTED";
-const SET_ISSORTEDBY = "appReducer/SET_ISSORTEDBY";
+const SET_DATAFILTERED = "appReducer/SET_DATAFILTERED";
+const SET_SORTPARAMS = "appReducer/SET_SORTPARAMS";
+const SET_FILTERPARAMS = "appReducer/SET_FILTERPARAMS";
 const DASHBOARD_INIT = "appReducer/DASHBOARD_INIT";
 
 const initialState = {
@@ -13,9 +15,16 @@ const initialState = {
     ...data.result.bestPrices.DIRECT.bestFlights,
   ],
   dataSorted: [],
+  dataFiltered: [],
   dataToShow: [],
   isDashboardInit: false,
-  isDashboardSortedBy: null,
+  dashboardFilterParams: {
+    carrier: "",
+  },
+  dashboardSortParams: {
+    sortBy: "default",
+    option: "default",
+  },
   dashboardParams: {
     currentPage: 1,
     pageSize: 50,
@@ -26,8 +35,6 @@ const initialState = {
 
 export const app = (state = initialState, action) => {
   switch (action.type) {
-    case INITIALIZE:
-      return { ...state, isInitialized: true };
     case DASHBOARD_INIT:
       return { ...state, isDashboardInit: true };
     case SET_QUANT:
@@ -50,8 +57,12 @@ export const app = (state = initialState, action) => {
       return { ...state, dataToShow: action.data };
     case SET_DATASORTED:
       return { ...state, dataSorted: action.data };
-    case SET_ISSORTEDBY:
-      return { ...state, isDashboardSortedBy: action.sortBy };
+    case SET_DATAFILTERED:
+      return { ...state, dataFiltered: action.data };
+    case SET_SORTPARAMS:
+      return { ...state, dashboardSortParams: action.params };
+    case SET_FILTERPARAMS:
+      return { ...state, dashboardFilterParams: action.params };
     default:
       return state;
   }
@@ -63,7 +74,9 @@ const setQuant = (quant) => ({ type: SET_QUANT, quant });
 const setPage = (page) => ({ type: SET_PAGE, page });
 const dataToShow = (data) => ({ type: SET_DATATOSHOW, data });
 const dataSorted = (data) => ({ type: SET_DATASORTED, data });
-const sortedBy = (sortBy) => ({ type: SET_ISSORTEDBY, sortBy });
+const dataFiltered = (data) => ({ type: SET_DATAFILTERED, data });
+const setSortParams = (params) => ({ type: SET_SORTPARAMS, params });
+const setFilterParams = (params) => ({ type: SET_FILTERPARAMS, params });
 const isDashboardInit = () => ({ type: DASHBOARD_INIT });
 
 //THUNKs
@@ -87,30 +100,52 @@ const dataSorter = (data, sortBy = "default", option = "default") => {
   return methods[`${sortBy}${option}`]();
 };
 
+const dataFilter = (sorted, filterBy = "") => {
+  return filterBy === ""
+    ? sorted
+    : sorted.filter((el) =>
+        el.carrier.caption.toLowerCase().includes(filterBy.toLowerCase())
+      );
+};
+
 export const dashboardInit = () => (dispatch, getState) => {
   const data = getState().app.data;
   const pSize = getState().app.dashboardParams.pageSize;
   const sorted = dataSorter(data);
+  const filtered = dataFilter(sorted);
   dispatch(dataSorted(sorted));
-  dispatch(dataToShow(pageFilter(sorted, pSize, 1)));
+  dispatch(dataFiltered(filtered));
+  dispatch(dataToShow(pageFilter(filtered, pSize, 1)));
   dispatch(isDashboardInit());
 };
 
 export const showPage = (newQuant, page) => (dispatch, getState) => {
   const pSize = getState().app.dashboardParams.pageSize;
-  const sorted = getState().app.dataSorted;
+  const filtered = getState().app.dataFiltered;
   dispatch(setQuant(newQuant));
   dispatch(setPage(page));
-  dispatch(dataToShow(pageFilter(sorted, pSize, page)));
+  dispatch(dataToShow(pageFilter(filtered, pSize, page)));
 };
 
-export const showSortedPage = (sortBy, option) => (dispatch, getState) => {
+export const handleFilterSort = (
+  sortBy = "default",
+  option = "default",
+  filterData = ""
+) => (dispatch, getState) => {
   const pSize = getState().app.dashboardParams.pageSize;
   const data = getState().app.data;
   const sorted = dataSorter(data, sortBy, option);
-  dispatch(sortedBy(sortBy));
+  const filtered = dataFilter(sorted, filterData);
+  const sortParams = { ...getState().app.dashboardSortOptions };
+  sortParams.sortBy = sortBy;
+  sortParams.option = option;
+  const filterParams = { ...getState().app.dashboardFilterParams };
+  filterParams.carrier = filterData;
+  dispatch(setSortParams(sortParams));
+  dispatch(setFilterParams(filterParams));
   dispatch(dataSorted(sorted));
+  dispatch(dataFiltered(filtered));
   dispatch(setQuant(0));
   dispatch(setPage(1));
-  dispatch(dataToShow(pageFilter(sorted, pSize, 1)));
+  dispatch(dataToShow(pageFilter(filtered, pSize, 1)));
 };

@@ -4,14 +4,46 @@ import { Button } from "../../Common/Button/Button";
 import {
   showPage,
   dashboardInit,
-  showSortedPage,
+  handleFilterSort,
 } from "../../../Redux/Reducers/appReducer";
 
 import arrow from "../../../Assets/Icons/arrow.png";
+import glass from "../../../Assets/Icons/search.png";
 import styles from "./dashboard.module.scss";
 
-const DashboardControls = ({ params, dataSorted, showPage }) => {
-  const totalPgs = Math.ceil(dataSorted.length / params.pageSize);
+const DashboardFilter = ({
+  handleFilterSort,
+  dashboardSortParams,
+  dashboardFilterParams,
+}) => {
+  const sortBy = dashboardSortParams.sortBy;
+  const option = dashboardSortParams.option;
+  const carrier = dashboardFilterParams.carrier;
+
+  const searchHandler = (e) => handleFilterSort(sortBy, option, e.target.value);
+
+  return (
+    <div className={styles.filter}>
+      <input
+        type="text"
+        onInput={searchHandler}
+        placeholder="Найти перевозчика"
+        value={carrier}
+      />
+      <img src={glass} alt="Поиск" />
+    </div>
+  );
+};
+
+const DashboardControls = ({
+  params,
+  dataFiltered,
+  showPage,
+  handleFilterSort,
+  dashboardSortParams,
+  dashboardFilterParams,
+}) => {
+  const totalPgs = Math.ceil(dataFiltered.length / params.pageSize);
 
   const pageSelector = (pageNum, newQuant = params.curQuant) =>
     showPage(newQuant, pageNum);
@@ -32,7 +64,11 @@ const DashboardControls = ({ params, dataSorted, showPage }) => {
 
   return (
     <div className={styles.controls}>
-      <div className={styles.filter}></div>
+      <DashboardFilter
+        handleFilterSort={handleFilterSort}
+        dashboardSortParams={dashboardSortParams}
+        dashboardFilterParams={dashboardFilterParams}
+      />
       <div className={styles.pagination}>
         <Button
           width="60px"
@@ -64,16 +100,21 @@ const DashboardControls = ({ params, dataSorted, showPage }) => {
   );
 };
 
-const DashboardHead = ({ dashboard, showSortedPage, isDashboardSortedBy }) => {
+const DashboardHead = ({
+  dashboard,
+  handleFilterSort,
+  dashboardSortParams,
+  dashboardFilterParams,
+}) => {
   const [carrierOpt, setCarrierOpt] = useState("increase");
   const [priceOpt, setpPriceOpt] = useState("increase");
 
   const sortHelper = (colName, localState, setLocalState) => {
-    showSortedPage(colName, localState);
+    handleFilterSort(colName, localState, dashboardFilterParams.carrier);
     setLocalState(localState === "decrease" ? "increase" : "decrease");
   };
 
-  const sortHandler = (e) => {
+  const sortOnClick = (e) => {
     e.target.textContent === "Перевозчик" &&
       sortHelper("carrier", carrierOpt, setCarrierOpt);
     e.target.textContent === "Цена" &&
@@ -95,10 +136,10 @@ const DashboardHead = ({ dashboard, showSortedPage, isDashboardSortedBy }) => {
           className={styles.item}
           style={{ width: item.width }}
           key={item.name}
-          onClick={sortHandler}
+          onClick={sortOnClick}
         >
           <h3>{item.title}</h3>
-          {isDashboardSortedBy === item.name && (
+          {dashboardSortParams.sortBy === item.name && (
             <img src={arrow} alt="Сортировка" style={arrowStyle(item.name)} />
           )}
         </div>
@@ -135,13 +176,17 @@ const Dashboard = ({ dashboardInit, ...props }) => {
     <div className={styles.dashboard}>
       <DashboardControls
         params={props.params}
-        dataSorted={props.dataSorted}
+        dataFiltered={props.dataFiltered}
         showPage={props.showPage}
+        dashboardSortParams={props.dashboardSortParams}
+        dashboardFilterParams={props.dashboardFilterParams}
+        handleFilterSort={props.handleFilterSort}
       />
       <DashboardHead
         dashboard={props.dashboard}
-        showSortedPage={props.showSortedPage}
-        isDashboardSortedBy={props.isDashboardSortedBy}
+        dashboardSortParams={props.dashboardSortParams}
+        dashboardFilterParams={props.dashboardFilterParams}
+        handleFilterSort={props.handleFilterSort}
       />
       <DashboardList dataToShow={props.dataToShow} />
     </div>
@@ -150,8 +195,9 @@ const Dashboard = ({ dashboardInit, ...props }) => {
 
 const mstp = (state) => ({
   isDashboardInit: state.app.isDashboardInit,
-  isDashboardSortedBy: state.app.isDashboardSortedBy,
-  dataSorted: state.app.dataSorted,
+  dashboardSortParams: state.app.dashboardSortParams,
+  dashboardFilterParams: state.app.dashboardFilterParams,
+  dataFiltered: state.app.dataFiltered,
   dataToShow: state.app.dataToShow,
   dashboard: state.ui.dashboard,
   pageSize: state.app.pageSize,
@@ -160,6 +206,6 @@ const mstp = (state) => ({
 
 export const DashboardCont = connect(mstp, {
   showPage,
-  showSortedPage,
+  handleFilterSort,
   dashboardInit,
 })(Dashboard);
