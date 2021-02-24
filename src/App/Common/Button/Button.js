@@ -1,6 +1,6 @@
 import s from "./button.module.scss";
 
-export const Button = ({ width, height, ...props }) => {
+export const Button = ({ width, height, title, ...props }) => {
   const handleClick = () =>
     props.handler &&
     props.handler(props.handlerArgs ? props.handlerArgs : null);
@@ -16,7 +16,7 @@ export const Button = ({ width, height, ...props }) => {
       onClick={handleClick}
       disabled={props.disabled}
     >
-      {props.title}
+      {title}
     </button>
   );
 };

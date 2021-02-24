@@ -38,8 +38,8 @@ const initialState = {
   aside: {
     menu: [
       { name: "Код", icon: icons.code, path: "/code" },
-      { name: "Таблица", icon: icons.sheets, path: "/table" },
-      { name: "Слайдеры", icon: icons.sliders, path: "/slider" },
+      { name: "Таблица", icon: icons.sheets, path: "/dashboard" },
+      { name: "Слайдеры", icon: icons.sliders, path: "/sliders" },
     ],
   },
   header: {
@@ -47,12 +47,13 @@ const initialState = {
     logo,
     author,
     authorName: "Артуров Кирилл",
-    authorInfo: "талантливый фронтенд разработчик",
+    authorInfo: "талантливый junior фронтенд разработчик",
   },
   dashboard: [
     { name: "carrier", title: "Перевозчик", width: "calc(100% - 220px)" },
     { name: "price", title: "Цена", width: "220px" },
   ],
+  sliders: [{ name: "red" }, { name: "green" }, { name: "blue" }],
 };
 
 export const ui = (state = initialState) => state;
