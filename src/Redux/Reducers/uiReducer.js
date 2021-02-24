@@ -1,6 +1,3 @@
-// import sheets from "../../Assets/Icons/sheets.svg";
-// import code from "../../Assets/Icons/code.svg";
-// import sliders from "../../Assets/Icons/sliders.svg";
 import logo from "../../Assets/Icons/logo.png";
 import author from "../../Assets/Images/Arturov.jpg";
 

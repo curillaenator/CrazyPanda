@@ -3,16 +3,19 @@ const INITIALIZE = "appReducer/INITIALIZE";
 const SET_QUANT = "appReducer/SET_QUANT";
 const SET_PAGE = "appReducer/SET_PAGE";
 const SET_DATATOSHOW = "appReducer/SET_DATATOSHOW";
+const SET_DATASORTED = "appReducer/SET_DATASORTED";
+const SET_ISSORTEDBY = "appReducer/SET_ISSORTEDBY";
 const DASHBOARD_INIT = "appReducer/DASHBOARD_INIT";
 
 const initialState = {
-  isInitialized: false,
   data: [
     ...data.result.bestPrices.ONE_CONNECTION.bestFlights,
     ...data.result.bestPrices.DIRECT.bestFlights,
   ],
+  dataSorted: [],
   dataToShow: [],
   isDashboardInit: false,
+  isDashboardSortedBy: null,
   dashboardParams: {
     currentPage: 1,
     pageSize: 50,
@@ -45,6 +48,10 @@ export const app = (state = initialState, action) => {
       };
     case SET_DATATOSHOW:
       return { ...state, dataToShow: action.data };
+    case SET_DATASORTED:
+      return { ...state, dataSorted: action.data };
+    case SET_ISSORTEDBY:
+      return { ...state, isDashboardSortedBy: action.sortBy };
     default:
       return state;
   }
@@ -52,50 +59,58 @@ export const app = (state = initialState, action) => {
 
 // ACTIONs
 
-// const isInitialize = () => ({ type: INITIALIZE });
 const setQuant = (quant) => ({ type: SET_QUANT, quant });
 const setPage = (page) => ({ type: SET_PAGE, page });
 const dataToShow = (data) => ({ type: SET_DATATOSHOW, data });
+const dataSorted = (data) => ({ type: SET_DATASORTED, data });
+const sortedBy = (sortBy) => ({ type: SET_ISSORTEDBY, sortBy });
 const isDashboardInit = () => ({ type: DASHBOARD_INIT });
 
 //THUNKs
 
-const pageFilter = (data, pSize, page) =>
-  data.filter((_, i) => i >= pSize * (page - 1) && i < page * pSize);
+const pageFilter = (data, pSize, currPage) =>
+  data.filter((_, i) => i >= pSize * (currPage - 1) && i < currPage * pSize);
 
-export const dashboardInit = (data, pSize) => (dispatch) => {
-  dispatch(dataToShow(pageFilter(data, pSize, 1)));
+const dataSorter = (data, sortBy = "default", option = "default") => {
+  const unsorted = data.map((el) => el);
+  const carrier = (c) => c.carrier.caption.split(" ").join("").toLowerCase();
+  const price = (p) => +p.price.amount;
+  const methods = {
+    carrierincrease: () =>
+      unsorted.sort((el1, el2) => carrier(el1) < carrier(el2) && -1),
+    carrierdecrease: () =>
+      unsorted.sort((el1, el2) => carrier(el1) > carrier(el2) && -1),
+    priceincrease: () => unsorted.sort((el1, el2) => price(el1) - price(el2)),
+    pricedecrease: () => unsorted.sort((el1, el2) => price(el2) - price(el1)),
+    defaultdefault: () => unsorted,
+  };
+  return methods[`${sortBy}${option}`]();
+};
+
+export const dashboardInit = () => (dispatch, getState) => {
+  const data = getState().app.data;
+  const pSize = getState().app.dashboardParams.pageSize;
+  const sorted = dataSorter(data);
+  dispatch(dataSorted(sorted));
+  dispatch(dataToShow(pageFilter(sorted, pSize, 1)));
   dispatch(isDashboardInit());
 };
 
-export const showPage = (data, newQuant, page, pSize) => (dispatch) => {
+export const showPage = (newQuant, page) => (dispatch, getState) => {
+  const pSize = getState().app.dashboardParams.pageSize;
+  const sorted = getState().app.dataSorted;
   dispatch(setQuant(newQuant));
   dispatch(setPage(page));
-  dispatch(dataToShow(pageFilter(data, pSize, page)));
-};
-
-const pageSorter = (data, sortBy, option) => {
-  const dataToSort = [...data.data];
-  console.log(dataToSort, sortBy, option);
-
-  const byCarrierIncr = dataToSort.sort(
-    (el1, el2) => el1.carrier.caption - el2.carrier.caption
-  );
-  const byCarrierDecr = dataToSort.sort(
-    (el1, el2) => el2.carrier.caption - el1.carrier.caption
-  );
-  const byPriceIncr = dataToSort.sort(
-    (el1, el2) => el1.price.amount - el2.price.amount
-  );
-  const byPriceDecr = dataToSort.sort(
-    (el1, el2) => el2.price.amount - el1.price.amount
-  );
-
-  // sortBy === 'carrier' &&
-  // sortBy === 'price' &&
+  dispatch(dataToShow(pageFilter(sorted, pSize, page)));
 };
 
 export const showSortedPage = (sortBy, option) => (dispatch, getState) => {
-  //   dispatch(dataToShow(pageSorter(getState().app, sortBy, option)));
-  pageSorter(getState().app, sortBy, option);
+  const pSize = getState().app.dashboardParams.pageSize;
+  const data = getState().app.data;
+  const sorted = dataSorter(data, sortBy, option);
+  dispatch(sortedBy(sortBy));
+  dispatch(dataSorted(sorted));
+  dispatch(setQuant(0));
+  dispatch(setPage(1));
+  dispatch(dataToShow(pageFilter(sorted, pSize, 1)));
 };
