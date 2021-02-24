@@ -4,7 +4,6 @@ const SET_COLOR = "sliderRedicer/SET_COLOR";
 const SET_BACKGROUNDCOLOR = "sliderRedicer/SET_BACKGROUNDCOLOR";
 
 const initialState = {
-  //   isInitilalized: false,
   mode: "color",
   color: {
     red: 240,
@@ -20,8 +19,6 @@ const initialState = {
 
 export const sliders = (state = initialState, action) => {
   switch (action.type) {
-    // case INITIALIZE:
-    //   return { ...state, isInitilalized: true };
     case SET_MODE:
       return { ...state, mode: action.mode };
     case SET_COLOR:
@@ -35,7 +32,6 @@ export const sliders = (state = initialState, action) => {
 
 // ACTIONs
 
-// const initialize = () => ({ type: INITIALIZE });
 export const setMode = (mode) => ({ type: SET_MODE, mode });
 export const setColor = (rgb) => ({ type: SET_COLOR, rgb });
 export const setBgc = (rgb) => ({ type: SET_BACKGROUNDCOLOR, rgb });
