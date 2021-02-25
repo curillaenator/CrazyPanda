@@ -1,5 +1,3 @@
-const SET_CASES = "codeRedicer/SET_CASES";
-
 const initialState = {
   cases: [
     {
@@ -19,11 +17,4 @@ const initialState = {
   ],
 };
 
-export const code = (state = initialState, action) => {
-  switch (action.type) {
-    case SET_CASES:
-      return { ...state, cases: action.cases };
-    default:
-      return state;
-  }
-};
+export const code = (state = initialState) => state;
