@@ -1,6 +1,113 @@
 @import "../../../palette.scss";
 
-.code {
+@mixin input {
+  width: 50%;
+  height: 32px;
+  margin-right: 16px;
+  outline: none;
+  border-radius: 16px;
+  border: 1px solid $divider;
+  padding: 0 16px;
+  &:focus {
+    border: 1px solid $primary;
+  }
+}
+@mixin info {
+  margin-bottom: 16px;
+  & > h3 {
+    margin-bottom: 8px;
+  }
+  & > p {
+    margin-bottom: 8px;
+  }
+}
+
+.coding {
   width: 100%;
+  height: calc(100vh - 96px);
+  overflow-y: auto;
   margin: 16px 0 0 16px;
+  .case {
+    & > h3 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 40px;
+      margin-bottom: 8px;
+      border-top: 1px solid $divider;
+      border-bottom: 1px solid $divider;
+    }
+    & > p {
+      margin-bottom: 16px;
+    }
+    .buttons {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      margin-bottom: 16px;
+      & > button {
+        margin-right: 16px;
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+    }
+    .code {
+      font-family: "Inter", serif;
+      font-size: 14px;
+    }
+    .test {
+      .polinomials {
+        .info {
+          @include info;
+        }
+        .run {
+          display: flex;
+          align-items: center;
+          margin-bottom: 16px;
+          & > input {
+            @include input;
+          }
+        }
+        .result {
+          margin-bottom: 16px;
+          & > h3 {
+            color: $textDanger;
+          }
+        }
+      }
+      .numbers {
+        .info {
+          @include info;
+        }
+        .run {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 16px;
+          & > input {
+            @include input;
+            width: 128px;
+          }
+          & > p {
+            margin-right: 8px;
+          }
+        }
+        .result {
+          margin-bottom: 16px;
+          & > h3 {
+            color: $textDanger;
+            margin-bottom: 4px;
+          }
+          & > p {
+            margin-bottom: 4px;
+            &:last-child {
+              margin-bottom: 0;
+            }
+          }
+        }
+      }
+    }
+  }
 }

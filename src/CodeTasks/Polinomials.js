@@ -1,42 +1,46 @@
-export const simplify = (poly) => {
-  poly = poly[0] !== "-" ? "+" + poly : "" + poly;
-  const alp = "abcdefghijklmnopqrstuvwxyz";
-  const CC = {};
+export const simplify = (polinomial) => {
+  polinomial = polinomial[0] !== "-" ? "+" + polinomial : "" + polinomial;
+  const alphabet = "abcdefghijklmnopqrstuvwxyz";
+  const cache = {};
 
-  const maper = (el) => poly.match(new RegExp(`[+-]${el}`)).index;
+  const maper = (el) => polinomial.match(new RegExp(`[+-]${el}`)).index;
 
-  const mons = poly
+  const monomials = polinomial
     .split(/[-+]/)
     .filter((el) => el !== "")
-    .map((el) => poly[maper(el)] + el);
+    .map((el) => polinomial[maper(el)] + el);
 
-  mons.forEach((el) => {
-    const c = { n: "", m: "" };
-    c.m = el
+  monomials.forEach((el) => {
+    const mCache = { num: "", mono: "" };
+    mCache.mono = el
       .replace(/[^a-z]/g, "")
       .split("")
-      .map((el) => alp.indexOf(el))
+      .map((el) => alphabet.indexOf(el))
       .sort((a, b) => a - b)
-      .map((el) => alp[el])
+      .map((el) => alphabet[el])
       .join("");
-    c.n = el.replace(/[a-z]/g, "");
+    mCache.num = el.replace(/[a-z]/g, "");
 
-    CC[c.m] = (CC[c.m] || 0) + Number(c.n === "-" ? -1 : c.n === "+" ? 1 : c.n);
+    cache[mCache.mono] =
+      (cache[mCache.mono] || 0) +
+      Number(mCache.num === "-" ? -1 : mCache.num === "+" ? 1 : mCache.num);
   });
 
-  Object.keys(CC).forEach((el) =>
-    CC[el] === 0
-      ? delete CC[el]
-      : (CC[el] = CC[el] > 0 ? `+${CC[el]}` : `${CC[el]}`)
+  Object.keys(cache).forEach((el) =>
+    cache[el] === 0
+      ? delete cache[el]
+      : (cache[el] = cache[el] > 0 ? `+${cache[el]}` : `${cache[el]}`)
   );
 
-  const check = (num) => {
-    return num.match(/\d/g).join("") === "1" ? num.replace(/\d/g, "") : num;
+  const check = (number) => {
+    return number.match(/\d/g).join("") === "1"
+      ? number.replace(/\d/g, "")
+      : number;
   };
 
-  const simple = Object.keys(CC)
+  const simple = Object.keys(cache)
     .sort()
-    .map((el) => `${CC[el]}${el}`)
+    .map((el) => `${cache[el]}${el}`)
     .sort((a, b) => a.length - b.length)
     .map((el) => check(el))
     .join("");
